@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-family: sans-serif;
+    background-color: rgb(1, 1, 1);
+    background-image: linear-gradient(rgba(206, 17, 67, 0.882), rgb(0, 0, 0, 0.5));
+    color: white;
+    transition: background-color 500ms ease;
+  } /* header */
+  header {
+    position: absolute;
+    z-index: 999;
+    text-align: center;
+    top: 0rem;
+    text-decoration: aquamarine;
+    padding: 1rem;
+    background: inherit;
+  }
+  .container {
+    position: relative;
+    width: min(400px, 100%);
+  } /* holidays */
+  ul {
+    list-style: none;
+    width: 100%;
+    height: 50%;
+    position: relative;
+    perspective: 900px;
+    transform-style: preserve-3d;
+  }
+  ul > li {
+    position: absolute;
+    left: 50%;
+    top: calc(50% - 1.2rem);
+    --rotateX: calc(
+      1deg * var(--rotateDegrees) * calc(var(--day_idx) - var(--currentDay))
+    );
+    transform: rotateX(var(--rotateX)) translateZ(190px) translateX(-50%)
+      scale(var(--scale, 1));
+    --hue: calc(var(--rotateDegrees) * var(--day_idx));
+    background-color: hsl(var(--hue), 50%, var(--lightness, 50%));
+    width: 70%;
+    color: white;
+    display: grid;
+    grid-template-columns: 2.5rem auto;
+    height: 2.4rem;
+    transition: transform 500ms ease, background-color 500ms ease;
+  }
+  ul > li.active {
+    --lightness: 30%;
+    --scale: 1.1;
+  }
+  ul > li > * {
+    display: grid;
+    align-items: center;
+  }
+  li > time {
+    text-align: center;
+  }
+  li > span {
+    padding-inline-start: 0.5rem;
+    color: white;
+  } /* controls */
+  .controls {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+  .controls button {
+    width: 1.5rem;
+    aspect-ratio: 1;
+    font-size: 0.9rem;
+    color: white;
+    border: none;
+    background: #39657e;
+    display: flex;
+    place-items: center;
+  }
+  .controls button:hover,
+  .controls button:focus {
+    background: rgb(6, 60, 131);
+  }
+  .controls button:active {
+    transform: scale(0.9);
+  }
+  .border {
+    width: 96%;
+    height: 3em;
+    border: 1px solid white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friendship Wheel 🖤</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Font Link for Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+</head>
+<body>
+    <header>
+        <h1>Wheel of Friendship🖤</h1>
+    </header>
+    <div class="container">
+        <ul></ul>
+        <div class="controls">
+            <button onclick="adjustDay(-1)">▲</button>
+            <button onclick="adjustDay(1)">▼</button>
+        </div>
+    </div>
+ <audio autoplay loop>
+    <source src="wheel.mpeg" type="audio/mpeg">
+    
+  </audio>
+
+
+    <script>
+        const febHolidays = [
+            "Dear Samhita,",
+            "First of all, Many Happy Returns Of The Day ❤",
+            "I can’t believe you’re 18! Cheers to another year, Bestie ! ",
+            "You’re the brightest star in the galaxy. !",
+            "I will always be there for you, No matter how far we are.",
+            "You're the prettiest, cutest, funniest, sweetest girl alive.",
+            "In one word, you're just perfect.",
+            "When I think about some of my favorite memories,",
+            "You’re always a part of them.",
+            "Nothing can shake our unbreakable bond.",
+            "You make the world a better and brighter place.",
+            "When we met, I knew that you’d always be a part of my life.",
+            "There’s not a day goes by that I don’t pray for you.",
+            "I'm so grateful I met you ❤",
+            "You have the best smile...",
+            "You are more fun than anyone or anything I know.",
+            "I don't want to lose you.",
+            "And trust me I dont want anyone else.",
+            "There's no one better than you.",
+            "Your friendship is one of my biggest blessings.",
+            "and I never take it for granted !!!",
+            "You always make my day.",
+            "I like the way you are.",
+            "You have the best sense of style.",
+            "We argue alot, but we always got over it,",
+            "And it made me realise how important you are in my life",
+            "A single rose can be my garden; a single friend, my world; ",
+            "And That is YOU !!!❤",
+            "Never doubt yourself, You're the best version of You",
+            "You're all that i could ever ask for !!!",
+            "I Love You So much ❤️"
+	    
+        ];
+        const ulEl = document.querySelector("ul");
+        const d = new Date();
+        let daynumber = d.getMonth() == 1 ? d.getDate() - 1 : 0;
+        let activeIndex = daynumber;
+        const rotate = -360 / febHolidays.length;
+        init();
+        function init() {
+            febHolidays.forEach((holiday, idx) => {
+                const liEl = document.createElement("li");
+                liEl.style.setProperty("--day_idx", idx);
+                liEl.innerHTML = `<time datetime="2022-02-${idx + 1}">${
+                idx + 1
+                }</time><span>${holiday}</span>`;
+                ulEl.append(liEl);
+            });
+            ulEl.style.setProperty("--rotateDegrees", rotate);
+            adjustDay(0);
+        }
+        function adjustDay(nr) {
+            daynumber += nr;
+            ulEl.style.setProperty("--currentDay", daynumber);
+            const activeEl = document.querySelector("li.active");
+            if (activeEl) activeEl.classList.remove("active");
+            activeIndex = (activeIndex + nr + febHolidays.length) % febHolidays.length;
+            const newActiveEl = document.querySelector(
+                `li:nth-child(${activeIndex + 1})`
+            );
+            document.body.style.backgroundColor = window.getComputedStyle(
+                newActiveEl
+            ).backgroundColor;
+            newActiveEl.classList.add("active");
+        }
+        window.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowUp":
+                adjustDay(-1);
+                break;
+                case "ArrowDown":
+                adjustDay(1);
+                break;
+                default:
+                return;
+            }
+        });
+    </script>
+</body>
+</html>
+
